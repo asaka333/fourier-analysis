@@ -13,23 +13,62 @@ def periodic_ex2(t):
     return (t + 1) % 2 - 1
 
 
-def plot_periodic_ex1(ax):
-    return plot_periodic(ax, periodic_ex1)
+def non_periodic_ex1(t):
+    if 0 < t <= 1:
+        return 1
+    else:
+        return 0
 
 
-def plot_periodic_ex2(ax):
-    return plot_periodic(ax, periodic_ex2)
+def non_periodic_ft_ex1(k):
+    if k == 0:
+        return None
+    else:
+        return 1 - np.exp(-1j * k) / (np.sqrt(2 * np.pi) * 1j * k)
 
 
-def plot_periodic(ax, periodic_func):
+def inv_fourier_transform(F, t, N, num_points=1000):
+    k = np.linspace(-N, N, num_points)
+    delta_k = 2 * N / num_points
+
+    return (1 / np.sqrt(2 * np.pi)) * np.sum(F(k) * np.exp(1j * k * t) * delta_k)
+
+
+def plot_periodic_ex1(ax, t=np.linspace(-4, 8, 1000)):
+    return plot_function(ax, periodic_ex1, t)
+
+
+def plot_periodic_ex2(ax, t=np.linspace(-4, 8, 1000)):
+    return plot_function(ax, periodic_ex2, t)
+
+
+def plot_non_periodic_ex1(ax, t=np.linspace(-2, 6, 1000)):
+    return plot_function(ax, non_periodic_ex1, t)
+
+
+def plot_non_periodic_ft_ex1(ax, t):
+    return plot_function(
+        ax, non_periodic_ft_ex1, t=np.linspace(-15, 15, 1000), is_time_coordinate=False
+    )
+
+def plot_invft_non_periodic_ft_ex1(ax, t=np.linspace(-2, 6, 1000)):
+    return  plot_function(
+        ax, inv_fourier_transform
+    )
+
+
+def plot_function(ax, periodic_func, t, is_time_coordinate=True):
     vectorized_f = np.vectorize(periodic_func)
-    t = np.linspace(-4, 8, 1000)
     y = vectorized_f(t)
 
     ax.plot(t, y, drawstyle="steps-post")
     ax.set_xlabel("$t$")
-    ax.set_ylabel("f(t)")
-    ax.set_title("$f(t)$")
+    if is_time_coordinate:
+        ax.set_ylabel("f(t)")
+        ax.set_title("$f(t)$")
+    else:
+        ax.set_ylabel("F(k)")
+        ax.set_title("$F(k)$")
     ax.axhline(0, color="black", linewidth=0.5, linestyle="--")
     ax.axvline(0, color="black", linewidth=0.5, linestyle="--")
     ax.grid(alpha=0.1)
