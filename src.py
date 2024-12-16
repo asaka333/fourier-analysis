@@ -79,7 +79,7 @@ def plot_Cn(ax, Cn_func, n, plot_range):
     ax.grid(alpha=0.5)
 
 
-def periodic_reconstruct(t, n, Cn):
+def periodic_reconst(t, n, Cn):
     out = Cn(0) * np.exp(1j * 0 * np.pi * t)
     for i in range(n)[1:]:
         out += Cn(i) * np.exp(1j * i * np.pi * t)
@@ -87,7 +87,7 @@ def periodic_reconstruct(t, n, Cn):
     return out
 
 
-def plot_periodic_reconstruct_ex1(ax, n):
+def plot_periodic_reconst_ex1(ax, n):
     return plot_periodic_reconst(ax, n, Cn_ex1)
 
 
@@ -96,7 +96,7 @@ def plot_periodic_reconst_ex2(ax, n):
 
 
 def plot_periodic_reconst(ax, n, Cn):
-    vectorized_periodic_reconst = np.vectorize(periodic_reconstruct)
+    vectorized_periodic_reconst = np.vectorize(periodic_reconst)
     t = np.linspace(-4, 8, 1000)
     y_values = vectorized_periodic_reconst(t, n, Cn)
     y_values_real = np.real(y_values)
