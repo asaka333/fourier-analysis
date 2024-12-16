@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def periodic(t):
+def periodic_ex1(t):
     t = t % 2
     if 0 <= t < 1:
         return 1
@@ -9,8 +9,20 @@ def periodic(t):
         return 0
 
 
-def plot_periodic(ax):
-    vectorized_f = np.vectorize(periodic)
+def periodic_ex2(t):
+    return (t + 1) % 2 - 1
+
+
+def plot_periodic_ex1(ax):
+    return plot_periodic(ax, periodic_ex1)
+
+
+def plot_periodic_ex2(ax):
+    return plot_periodic(ax, periodic_ex2)
+
+
+def plot_periodic(ax, periodic_func):
+    vectorized_f = np.vectorize(periodic_func)
     t = np.linspace(-4, 8, 1000)
     y = vectorized_f(t)
 
@@ -24,19 +36,34 @@ def plot_periodic(ax):
     return ax
 
 
-def C_n(n):
+def Cn_ex1(n):
     if n == 0:
         return 1 / 2
     else:
         return (1j / (2 * n * np.pi)) * ((-1.0) ** n - 1)
 
 
-def plot_coefs(ax, n=-1, plot_range=20):
+def Cn_ex2(n):
+    if n == 0:
+        return 0
+    else:
+        return (1j / (n * np.pi)) * (-1.0) ** n
+
+
+def plot_Cn_ex1(ax, n=-1, plot_range=20):
+    return plot_Cn(ax, Cn_ex1, n, plot_range)
+
+
+def plot_Cn_ex2(ax, n=-1, plot_range=20):
+    return plot_Cn(ax, Cn_ex2, n, plot_range)
+
+
+def plot_Cn(ax, Cn_func, n, plot_range):
     if plot_range <= 15:
         n_values = np.arange(-20, 20)
     else:
         n_values = np.arange(-plot_range - 5, plot_range + 5)
-    Cn_values = np.array([C_n(n) for n in n_values])
+    Cn_values = np.array([Cn_func(n) for n in n_values])
     Cn_values_abs = np.abs(Cn_values)
 
     if n < 0:
@@ -52,18 +79,26 @@ def plot_coefs(ax, n=-1, plot_range=20):
     ax.grid(alpha=0.5)
 
 
-def periodic_reconstruct(t, n):
-    out = C_n(0) * np.exp(1j * 0 * np.pi * t)
+def periodic_reconstruct(t, n, Cn):
+    out = Cn(0) * np.exp(1j * 0 * np.pi * t)
     for i in range(n)[1:]:
-        out += C_n(i) * np.exp(1j * i * np.pi * t)
-        out += C_n(-i) * np.exp(1j * (-i) * np.pi * t)
+        out += Cn(i) * np.exp(1j * i * np.pi * t)
+        out += Cn(-i) * np.exp(1j * (-i) * np.pi * t)
     return out
 
 
-def plot_periodic_reconstruct(ax, n):
-    vectorized_f = np.vectorize(periodic_reconstruct)
+def plot_periodic_reconstruct_ex1(ax, n):
+    return plot_periodic_reconst(ax, n, Cn_ex1)
+
+
+def plot_periodic_reconst_ex2(ax, n):
+    return plot_periodic_reconst(ax, n, Cn_ex2)
+
+
+def plot_periodic_reconst(ax, n, Cn):
+    vectorized_periodic_reconst = np.vectorize(periodic_reconstruct)
     t = np.linspace(-4, 8, 1000)
-    y_values = vectorized_f(t, n=n)
+    y_values = vectorized_periodic_reconst(t, n, Cn)
     y_values_real = np.real(y_values)
 
     ax.plot(t, y_values_real, drawstyle="steps-post")
